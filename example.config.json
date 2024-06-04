@@ -1,0 +1,19 @@
+{
+    "downloads_folder": "C:/Users/YourUsername/Downloads",
+    "folders": {
+        "Documents": "C:/Users/YourUsername/Downloads/Documents",
+        "Apps": "C:/Users/YourUsername/Downloads/Apps",
+        "Images": "C:/Users/YourUsername/Downloads/Images",
+        "Videos": "C:/Users/YourUsername/Downloads/Videos",
+        "Other": "C:/Users/YourUsername/Downloads/Other"
+    },
+    "file_types": {
+        "Documents": [".pdf", ".docx", ".doc", ".txt", ".pptx", ".ppt", ".xlsx", ".xls"],
+        "Apps": [".exe", ".msi"],
+        "Images": [".png", ".jpg", ".jpeg", ".webp", ".gif", ".bmp"],
+        "Videos": [".mp4", ".mkv", ".mov", ".avi", ".flv", ".wmv"]
+    },
+    "notifications": true,
+    "retry_attempts": 3,
+    "retry_delay": 2
+}
