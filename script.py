@@ -100,7 +100,7 @@ class FileOrganizer:
             "notifications": True,
             "retry_attempts": 3,
             "retry_delay": 2,
-            "icon_path": "path/to/your/icon.png"  # Add your icon path here
+            "icon_path": "mfo.png"  # Add your icon path here
         }
         with open(self.config_path, 'w') as file:
             json.dump(default_config, file, indent=4)
@@ -203,7 +203,7 @@ class FileOrganizer:
         self.create_folders()
         self.logger.info("Configuration reloaded.")
         notification.notify(
-            title="Download File Organizer",
+            title="Messy File Organizer",
             message="Configuration reloaded successfully.",
             timeout=10
         )
@@ -211,7 +211,7 @@ class FileOrganizer:
     def enable_autostart(self):
         if platform.system() == 'Windows':
             pth = os.path.dirname(os.path.realpath(__file__))
-            s_name = "DownloadFileOrganizer"
+            s_name = "MessyFileOrganizer"
             address = os.path.join(pth, "download_file_organizer.exe")
 
             key = reg.HKEY_CURRENT_USER
@@ -222,7 +222,7 @@ class FileOrganizer:
             reg.CloseKey(open)
             self.logger.info("Application set to auto-start on login.")
             notification.notify(
-                title="Download File Organizer",
+                title="Messy File Organizer",
                 message="Application set to auto-start on login.",
                 timeout=10
             )
@@ -231,7 +231,7 @@ class FileOrganizer:
 
     def disable_autostart(self):
         if platform.system() == 'Windows':
-            s_name = "DownloadFileOrganizer"
+            s_name = "MessyFileOrganizer"
 
             key = reg.HKEY_CURRENT_USER
             key_value = r'Software\Microsoft\Windows\CurrentVersion\Run'
@@ -242,7 +242,7 @@ class FileOrganizer:
                 reg.CloseKey(open)
                 self.logger.info("Application auto-start disabled.")
                 notification.notify(
-                    title="Download File Organizer",
+                    title="Messy File Organizer",
                     message="Application auto-start disabled.",
                     timeout=10
                 )
@@ -294,9 +294,9 @@ class FileOrganizer:
 
     def run_tray_icon(self):
         self.icon = Icon(
-            "Download File Organizer", 
+            "Messy File Organizer", 
             self.create_image(), 
-            "Download File Organizer", 
+            "Messy File Organizer", 
             menu=self.create_menu()
         )
         self.icon.run()
@@ -304,7 +304,7 @@ class FileOrganizer:
     def show_about(self, icon, item):
         root = tk.Tk()
         root.withdraw()
-        messagebox.showinfo("About", "Download File Organizer\nVersion 1.0.0\nA file download manager to clean up your messy downloads folder.\nCreated by angeldev0")
+        messagebox.showinfo("About", "Messy File Organizer\nVersion 1.0.0\nA file download manager to clean up your messy downloads folder.\nCreated by angeldev0")
         root.destroy()
 
     def open_config(self, icon, item):
