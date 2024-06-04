@@ -28,7 +28,7 @@ class FileOrganizer:
     def __init__(self, args):
         self.args = args
         self.config_path = args.config
-        self.shutdown_flag = False  # Add this flag
+        self.shutdown_flag = False
 
         user_home = os.path.expanduser("~")
         config_dir = os.path.join(user_home, '.config', 'dfm')
@@ -42,6 +42,18 @@ class FileOrganizer:
         self.monitoring = True
         self.observer = None
         self.event_handler = DownloadEventHandler(self)
+        self.icon_path = self.config.get("icon_path", "default_icon.png")
+
+    def create_image(self):
+        if os.path.isfile(self.icon_path):
+            return Image.open(self.icon_path)
+        else:
+            width, height = 64, 64
+            image = Image.new('RGB', (width, height), (0, 0, 0))
+            dc = ImageDraw.Draw(image)
+            dc.rectangle((width // 2, 0, width, height // 2), fill=(255, 0, 0))
+            dc.rectangle((0, height // 2, width // 2, height), fill=(255, 0, 0))
+            return image
 
     def configure_logging(self):
         log_level = getattr(logging, self.args.log_level.upper(), logging.INFO)
@@ -240,17 +252,6 @@ class FileOrganizer:
                 self.logger.warning("Auto-start entry not found.")
         else:
             self.logger.warning("Auto-start functionality is only available on Windows.")
-
-    def create_image(self):
-        if 'icon_path' in self.config and os.path.isfile(self.config['icon_path']):
-            return Image.open(self.config['icon_path'])
-        else:
-            width, height = 64, 64
-            image = Image.new('RGB', (width, height), (0, 0, 0))
-            dc = ImageDraw.Draw(image)
-            dc.rectangle((width // 2, 0, width, height // 2), fill=(255, 0, 0))
-            dc.rectangle((0, height // 2, width // 2, height), fill=(255, 0, 0))
-            return image
         
     def view_log(self, icon, item):
         log_file_path = self.args.log_file_path
