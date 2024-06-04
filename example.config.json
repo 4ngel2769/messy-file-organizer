@@ -1,17 +1,19 @@
 {
-    "downloads_folder": "C:/Users/YourUsername/Downloads",
+    "downloads_folder": "C:\\Users\\User\\Downloads",
     "folders": {
-        "Documents": "C:/Users/YourUsername/Downloads/Documents",
-        "Apps": "C:/Users/YourUsername/Downloads/Apps",
-        "Images": "C:/Users/YourUsername/Downloads/Images",
-        "Videos": "C:/Users/YourUsername/Downloads/Videos",
-        "Other": "C:/Users/YourUsername/Downloads/Other"
+        "Documents": "C:\\Users\\User\\Downloads\\Documents",
+        "Apps": "C:\\Users\\User\\Downloads\\Apps",
+        "Images": "C:\\Users\\User\\Downloads\\Images",
+        "Videos": "C:\\Users\\User\\Downloads\\Videos",
+        "Archives": "C:\\Users\\User\\Downloads\\Archives",
+        "Other": "C:\\Users\\User\\Downloads\\Other"
     },
     "file_types": {
         "Documents": [".pdf", ".docx", ".doc", ".txt", ".pptx", ".ppt", ".xlsx", ".xls"],
         "Apps": [".exe", ".msi"],
         "Images": [".png", ".jpg", ".jpeg", ".webp", ".gif", ".bmp"],
-        "Videos": [".mp4", ".mkv", ".mov", ".avi", ".flv", ".wmv"]
+        "Videos": [".mp4", ".mkv", ".mov", ".avi", ".flv", ".wmv"],
+        "Archives": [".zip", ".rar", ".tar.gz", ".tar.xz", ".gz", "7z", ".dmg", ".iso", ".pak", ".tar.gz", ".tgz", ".tar.Z", ".tar.bz2", ".tbz2", ".tar.lz", ".tlz", ".tar.xz", ".txz", ".tar.zst"]
     },
     "notifications": true,
     "retry_attempts": 3,
