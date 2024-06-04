@@ -21,8 +21,9 @@ from pystray import Icon, Menu, MenuItem
 from PIL import Image, ImageDraw
 from plyer import notification
 import winreg as reg
+import tkinter as tk
+from tkinter import messagebox
 
-# File Organizer Class
 class FileOrganizer:
     def __init__(self, args):
         self.args = args
@@ -134,49 +135,58 @@ class FileOrganizer:
         )
 
     def enable_autostart(self):
-        pth = os.path.dirname(os.path.realpath(__file__))
-        s_name = "DownloadFileOrganizer"
-        address = os.path.join(pth, "download_file_organizer.exe")
+        if platform.system() == 'Windows':
+            pth = os.path.dirname(os.path.realpath(__file__))
+            s_name = "DownloadFileOrganizer"
+            address = os.path.join(pth, "download_file_organizer.exe")
 
-        key = reg.HKEY_CURRENT_USER
-        key_value = r'Software\Microsoft\Windows\CurrentVersion\Run'
+            key = reg.HKEY_CURRENT_USER
+            key_value = r'Software\Microsoft\Windows\CurrentVersion\Run'
 
-        open = reg.OpenKey(key, key_value, 0, reg.KEY_ALL_ACCESS)
-        reg.SetValueEx(open, s_name, 0, reg.REG_SZ, address)
-        reg.CloseKey(open)
-        self.logger.info("Application set to auto-start on login.")
-        notification.notify(
-            title="Download File Organizer",
-            message="Application set to auto-start on login.",
-            timeout=10
-        )
-
-    def disable_autostart(self):
-        s_name = "DownloadFileOrganizer"
-
-        key = reg.HKEY_CURRENT_USER
-        key_value = r'Software\Microsoft\Windows\CurrentVersion\Run'
-
-        try:
             open = reg.OpenKey(key, key_value, 0, reg.KEY_ALL_ACCESS)
-            reg.DeleteValue(open, s_name)
+            reg.SetValueEx(open, s_name, 0, reg.REG_SZ, address)
             reg.CloseKey(open)
-            self.logger.info("Application auto-start disabled.")
+            self.logger.info("Application set to auto-start on login.")
             notification.notify(
                 title="Download File Organizer",
-                message="Application auto-start disabled.",
+                message="Application set to auto-start on login.",
                 timeout=10
             )
-        except FileNotFoundError:
-            self.logger.warning("Auto-start entry not found.")
+        else:
+            self.logger.warning("Auto-start functionality is only available on Windows.")
+
+    def disable_autostart(self):
+        if platform.system() == 'Windows':
+            s_name = "DownloadFileOrganizer"
+
+            key = reg.HKEY_CURRENT_USER
+            key_value = r'Software\Microsoft\Windows\CurrentVersion\Run'
+
+            try:
+                open = reg.OpenKey(key, key_value, 0, reg.KEY_ALL_ACCESS)
+                reg.DeleteValue(open, s_name)
+                reg.CloseKey(open)
+                self.logger.info("Application auto-start disabled.")
+                notification.notify(
+                    title="Download File Organizer",
+                    message="Application auto-start disabled.",
+                    timeout=10
+                )
+            except FileNotFoundError:
+                self.logger.warning("Auto-start entry not found.")
+        else:
+            self.logger.warning("Auto-start functionality is only available on Windows.")
 
     def create_image(self):
-        width, height = 64, 64
-        image = Image.new('RGB', (width, height), (0, 0, 0))
-        dc = ImageDraw.Draw(image)
-        dc.rectangle((width // 2, 0, width, height // 2), fill=(255, 0, 0))
-        dc.rectangle((0, height // 2, width // 2, height), fill=(255, 0, 0))
-        return image
+        if 'icon_path' in self.config and os.path.isfile(self.config['icon_path']):
+            return Image.open(self.config['icon_path'])
+        else:
+            width, height = 64, 64
+            image = Image.new('RGB', (width, height), (0, 0, 0))
+            dc = ImageDraw.Draw(image)
+            dc.rectangle((width // 2, 0, width, height // 2), fill=(255, 0, 0))
+            dc.rectangle((0, height // 2, width // 2, height), fill=(255, 0, 0))
+            return image
 
     def run_tray_icon(self):
         icon = Icon("Download File Organizer", self.create_image(), "Download File Organizer", 
@@ -192,11 +202,10 @@ class FileOrganizer:
         icon.run()
 
     def show_about(self, icon, item):
-        notification.notify(
-            title="Download File Organizer",
-            message="Download File Organizer\nVersion 1.0.0\nThe path to learning python\nangeldev0",
-            timeout=10
-        )
+        root = tk.Tk()
+        root.withdraw()
+        messagebox.showinfo("About", "Download File Organizer\nVersion 1.0.0\nA file download manager to clean up your messy downloads folder.\nCreated by angeldev0")
+        root.destroy()
 
     def open_config(self, icon, item):
         if platform.system() == 'Windows':
