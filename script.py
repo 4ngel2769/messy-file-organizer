@@ -28,16 +28,10 @@ class FileOrganizer:
     def __init__(self, args):
         self.args = args
         self.config_path = args.config
+        self.shutdown_flag = False  # Add this flag
 
-        # Detect OS and construct log file path
         user_home = os.path.expanduser("~")
-        if platform.system() == 'Windows':
-            config_dir = os.path.join(user_home, '.config', 'dfm')
-        elif platform.system() == 'Darwin':  # macOS
-            config_dir = os.path.join(user_home, '.config', 'dfm')
-        else:  # Linux and other UNIX-like systems
-            config_dir = os.path.join(user_home, '.config', 'dfm')
-        
+        config_dir = os.path.join(user_home, '.config', 'dfm')
         os.makedirs(config_dir, exist_ok=True)
         self.args.log_file_path = os.path.join(config_dir, 'file_organizer.log')
 
@@ -48,7 +42,7 @@ class FileOrganizer:
         self.monitoring = True
         self.observer = None
         self.event_handler = DownloadEventHandler(self)
-    
+
     def configure_logging(self):
         log_level = getattr(logging, self.args.log_level.upper(), logging.INFO)
         logging.basicConfig(
@@ -88,7 +82,6 @@ class FileOrganizer:
                 ".json": "Documents",
                 ".log": "Logs"
             },
-
             "file_types": {
                 "Documents": [".pdf", ".docx", ".doc", ".txt", ".pptx", ".ppt", ".xlsx", ".xls"],
                 "Apps": [".exe", ".msi"],
@@ -171,7 +164,6 @@ class FileOrganizer:
         else:
             self.logger.error(f"Exhausted all retry attempts for file: {file_path}")
 
-
     def start_monitoring(self):
         self.observer = Observer()
         self.observer.schedule(self.event_handler, self.config['downloads_folder'], recursive=False)
@@ -180,7 +172,6 @@ class FileOrganizer:
         self.observer_thread.start()
         self.logger.info(f"Monitoring Downloads folder for new files: {self.config['downloads_folder']}")
 
-        # Monitor the config file for changes
         self.config_observer = Observer()
         self.config_event_handler = ConfigEventHandler(self)
         self.config_observer.schedule(self.config_event_handler, os.path.dirname(self.config_path), recursive=False)
@@ -196,7 +187,6 @@ class FileOrganizer:
         if self.config_observer is not None:
             self.config_observer.stop()
             self.config_observer_thread.join()
-
 
     def reload_config(self):
         self.load_config()
@@ -265,10 +255,9 @@ class FileOrganizer:
     def view_log(self, icon, item):
         log_file_path = self.args.log_file_path
         
-        # Ensure the log file exists
         if not os.path.exists(log_file_path):
             with open(log_file_path, 'w') as log_file:
-                log_file.write('')  # Create an empty log file
+                log_file.write('')
         
         if platform.system() == 'Windows':
             os.startfile(log_file_path)
@@ -325,12 +314,13 @@ class FileOrganizer:
             self.monitoring = True
             self.logger.info("Monitoring resumed.")
         
-        # Update menu to reflect the change
         self.icon.menu = self.create_menu()
 
     def stop(self, icon, item):
         self.stop_monitoring()
         icon.stop()
+        self.shutdown_flag = True  # Signal the main loop to exit
+
 
 class ConfigEventHandler(FileSystemEventHandler):
     def __init__(self, organizer):
@@ -340,14 +330,13 @@ class ConfigEventHandler(FileSystemEventHandler):
         if event.src_path == self.organizer.config_path:
             self.organizer.reload_config()
 
-
 class DownloadEventHandler(FileSystemEventHandler):
     def __init__(self, organizer):
         self.organizer = organizer
 
     def on_created(self, event):
         if not event.is_directory:
-            sleep(5)  # Add a delay to ensure the file is fully downloaded
+            sleep(5)
             self.organizer.move_file(event.src_path)
 
 def main():
@@ -368,13 +357,17 @@ def main():
     if not args.paused:
         organizer.start_monitoring()
 
-    organizer.run_tray_icon()
+    tray_thread = Thread(target=organizer.run_tray_icon)
+    tray_thread.start()
 
     try:
-        while True:
+        while not organizer.shutdown_flag:
             sleep(1)
     except KeyboardInterrupt:
         organizer.stop_monitoring()
+    
+    tray_thread.join()
+    sys.exit(0)  # Ensure the program exits completely
 
 if __name__ == "__main__":
     main()
