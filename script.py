@@ -129,7 +129,7 @@ class FileOrganizer:
 
     def move_file(self, file_path):
         _, extension = os.path.splitext(file_path)
-        if extension == '.tmp' or file_path.endswith('~'):
+        if extension == '.tmp' and '.part' or file_path.endswith('~'):
             self.logger.info(f"Ignored temporary file: {file_path}")
             return
 
