@@ -297,6 +297,13 @@ class FileOrganizer:
         about_message = ("Messy File Organizer\n"
                          "Version 1.0.0\n"
                          "A file download manager to clean up your messy downloads folder.\n"
+                         " \n"
+                         " \n"
+                         "⚠️ DISCLAIMER ⚠️\n"
+                         "This application is still in Beta and contains bugs.\n"
+                         "Please create an issue on GitHub\n"
+                         " \n"
+                         " \n"
                          "Created by angeldev0\n"
                          "https://github.com/4ngel2769/messy-file-organizer")
         messagebox.showinfo("About", about_message)
