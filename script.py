@@ -28,12 +28,25 @@ class FileOrganizer:
     def __init__(self, args):
         self.args = args
         self.config_path = args.config
+
+        # Detect OS and construct log file path
+        user_home = os.path.expanduser("~")
+        if platform.system() == 'Windows':
+            config_dir = os.path.join(user_home, '.config', 'dfm')
+        elif platform.system() == 'Darwin':  # macOS
+            config_dir = os.path.join(user_home, '.config', 'dfm')
+        else:  # Linux and other UNIX-like systems
+            config_dir = os.path.join(user_home, '.config', 'dfm')
+        
+        os.makedirs(config_dir, exist_ok=True)
+        self.args.log_file_path = os.path.join(config_dir, 'file_organizer.log')
+
         self.load_config()
         self.logger = self.configure_logging()
         self.backup_config()
         self.create_folders()
         self.monitoring = True
-        self.observer = Observer()
+        self.observer = None
         self.event_handler = DownloadEventHandler(self)
     
     def configure_logging(self):
@@ -47,12 +60,51 @@ class FileOrganizer:
         return logging.getLogger()
 
     def load_config(self):
+        if not os.path.exists(self.config_path):
+            self.create_default_config()
         try:
             with open(self.config_path, 'r') as file:
                 self.config = json.load(file)
         except Exception as e:
             print(f"Failed to load configuration file: {e}")
             sys.exit(1)
+
+    def create_default_config(self):
+        user_home = os.path.expanduser("~")
+        downloads_folder = os.path.join(user_home, "Downloads")
+        default_config = {
+            "downloads_folder": downloads_folder,
+            "folders": {
+                "Documents": os.path.join(downloads_folder, "Documents"),
+                "Apps": os.path.join(downloads_folder, "Apps"),
+                "Images": os.path.join(downloads_folder, "Images"),
+                "Videos": os.path.join(downloads_folder, "Videos"),
+                "Archives": os.path.join(downloads_folder, "Archives"),
+                "Music": os.path.join(downloads_folder, "Music"),
+                "Other": os.path.join(downloads_folder, "Other")
+            },
+            "default_folder_mappings": {
+                ".md": "Documents",
+                ".json": "Documents",
+                ".log": "Logs"
+            },
+
+            "file_types": {
+                "Documents": [".pdf", ".docx", ".doc", ".txt", ".pptx", ".ppt", ".xlsx", ".xls"],
+                "Apps": [".exe", ".msi"],
+                "Images": [".png", ".jpg", ".jpeg", ".webp", ".gif", ".bmp"],
+                "Videos": [".mp4", ".mkv", ".mov", ".avi", ".flv", ".wmv"],
+                "Archives": [".zip", ".rar", ".tar.gz", ".tar.xz", ".gz", "7z", ".dmg", ".iso", ".pak", ".tar.gz", ".tgz", ".tar.Z", ".tar.bz2", ".tbz2", ".tar.lz", ".tlz", ".tar.xz", ".txz", ".tar.zst"],
+                "Music": [".mp3", ".wav", ".aac", ".flac", ".ogg"]
+            },
+            "notifications": True,
+            "retry_attempts": 3,
+            "retry_delay": 2,
+            "icon_path": "path/to/your/icon.png"  # Add your icon path here
+        }
+        with open(self.config_path, 'w') as file:
+            json.dump(default_config, file, indent=4)
+        print(f"Default configuration file created at: {self.config_path}")
 
     def backup_config(self):
         try:
@@ -84,6 +136,12 @@ class FileOrganizer:
         destination = self.config['folders']['Other']
         category = 'Other'
 
+        for ext, folder in self.config.get('default_folder_mappings', {}).items():
+            if extension == ext:
+                destination = self.config['folders'].get(folder, destination)
+                category = folder
+                break
+
         for cat, extensions in self.config['file_types'].items():
             if extension in extensions:
                 destination = self.config['folders'][cat]
@@ -113,16 +171,32 @@ class FileOrganizer:
         else:
             self.logger.error(f"Exhausted all retry attempts for file: {file_path}")
 
+
     def start_monitoring(self):
+        self.observer = Observer()
         self.observer.schedule(self.event_handler, self.config['downloads_folder'], recursive=False)
         self.observer_thread = Thread(target=self.observer.start)
         self.observer_thread.daemon = True
         self.observer_thread.start()
         self.logger.info(f"Monitoring Downloads folder for new files: {self.config['downloads_folder']}")
 
+        # Monitor the config file for changes
+        self.config_observer = Observer()
+        self.config_event_handler = ConfigEventHandler(self)
+        self.config_observer.schedule(self.config_event_handler, os.path.dirname(self.config_path), recursive=False)
+        self.config_observer_thread = Thread(target=self.config_observer.start)
+        self.config_observer_thread.daemon = True
+        self.config_observer_thread.start()
+        self.logger.info(f"Monitoring configuration file for changes: {self.config_path}")
+
     def stop_monitoring(self):
-        self.observer.stop()
-        self.observer_thread.join()
+        if self.observer is not None:
+            self.observer.stop()
+            self.observer_thread.join()
+        if self.config_observer is not None:
+            self.config_observer.stop()
+            self.config_observer_thread.join()
+
 
     def reload_config(self):
         self.load_config()
@@ -187,19 +261,45 @@ class FileOrganizer:
             dc.rectangle((width // 2, 0, width, height // 2), fill=(255, 0, 0))
             dc.rectangle((0, height // 2, width // 2, height), fill=(255, 0, 0))
             return image
+        
+    def view_log(self, icon, item):
+        log_file_path = self.args.log_file_path
+        
+        # Ensure the log file exists
+        if not os.path.exists(log_file_path):
+            with open(log_file_path, 'w') as log_file:
+                log_file.write('')  # Create an empty log file
+        
+        if platform.system() == 'Windows':
+            os.startfile(log_file_path)
+        elif platform.system() == 'Darwin':  # macOS
+            subprocess.call(['open', log_file_path])
+        else:  # Linux and other UNIX-like systems
+            subprocess.call(['xdg-open', log_file_path])
+
+    def create_menu(self):
+        return Menu(
+            MenuItem("About", self.show_about),
+            MenuItem("View Log", self.view_log),
+            MenuItem("Open Config", self.open_config),
+            MenuItem(
+                "Pause Monitoring" if self.monitoring else "Resume Monitoring",
+                self.toggle_monitoring
+            ),
+            MenuItem("Reload Config", self.reload_config),
+            MenuItem("Enable Auto-Start", self.enable_autostart),
+            MenuItem("Disable Auto-Start", self.disable_autostart),
+            MenuItem("Exit", self.stop)
+        )
 
     def run_tray_icon(self):
-        icon = Icon("Download File Organizer", self.create_image(), "Download File Organizer", 
-                    menu=Menu(
-                        MenuItem("About", self.show_about),
-                        MenuItem("Open Config", self.open_config),
-                        MenuItem("Pause Monitoring", self.toggle_monitoring),
-                        MenuItem("Reload Config", self.reload_config),
-                        MenuItem("Enable Auto-Start", self.enable_autostart),
-                        MenuItem("Disable Auto-Start", self.disable_autostart),
-                        MenuItem("Exit", self.stop)
-                    ))
-        icon.run()
+        self.icon = Icon(
+            "Download File Organizer", 
+            self.create_image(), 
+            "Download File Organizer", 
+            menu=self.create_menu()
+        )
+        self.icon.run()
 
     def show_about(self, icon, item):
         root = tk.Tk()
@@ -218,19 +318,28 @@ class FileOrganizer:
     def toggle_monitoring(self, icon, item):
         if self.monitoring:
             self.stop_monitoring()
-            item.text = "Resume Monitoring"
             self.monitoring = False
             self.logger.info("Monitoring paused.")
         else:
             self.start_monitoring()
-            item.text = "Pause Monitoring"
             self.monitoring = True
             self.logger.info("Monitoring resumed.")
+        
+        # Update menu to reflect the change
+        self.icon.menu = self.create_menu()
 
     def stop(self, icon, item):
         self.stop_monitoring()
         icon.stop()
-        sys.exit()
+
+class ConfigEventHandler(FileSystemEventHandler):
+    def __init__(self, organizer):
+        self.organizer = organizer
+
+    def on_modified(self, event):
+        if event.src_path == self.organizer.config_path:
+            self.organizer.reload_config()
+
 
 class DownloadEventHandler(FileSystemEventHandler):
     def __init__(self, organizer):
@@ -248,13 +357,17 @@ def main():
     parser.add_argument('-lf', '--log_file_path', type=str, default='file_organizer.log', help='Path to the log file')
     parser.add_argument('-ll', '--log_level', type=str, default='INFO', help='Logging level (DEBUG, INFO, WARNING, ERROR, CRITICAL)')
     parser.add_argument('-d', '--downloads_folder', type=str, help='Path to the Downloads folder')
+    parser.add_argument('-p', '--paused', action='store_true', help='Start in paused state')
     parser.add_argument('-n', '--notifications', action='store_true', help='Enable desktop notifications')
     parser.add_argument('-ra', '--retry_attempts', type=int, help='Number of retry attempts for file operations')
     parser.add_argument('-rd', '--retry_delay', type=int, help='Delay between retry attempts in seconds')
     args = parser.parse_args()
 
     organizer = FileOrganizer(args)
-    organizer.start_monitoring()
+
+    if not args.paused:
+        organizer.start_monitoring()
+
     organizer.run_tray_icon()
 
     try:
