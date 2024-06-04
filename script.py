@@ -357,7 +357,7 @@ def main():
     parser.add_argument('-lf', '--log_file_path', type=str, default='file_organizer.log', help='Path to the log file')
     parser.add_argument('-ll', '--log_level', type=str, default='INFO', help='Logging level (DEBUG, INFO, WARNING, ERROR, CRITICAL)')
     parser.add_argument('-d', '--downloads_folder', type=str, help='Path to the Downloads folder')
-    parser.add_argument('-p', '--paused', action='store_true', help='Start in paused state')
+    parser.add_argument('-p', '--paused', action='store_true', help='Start in paused state') # This might break
     parser.add_argument('-n', '--notifications', action='store_true', help='Enable desktop notifications')
     parser.add_argument('-ra', '--retry_attempts', type=int, help='Number of retry attempts for file operations')
     parser.add_argument('-rd', '--retry_delay', type=int, help='Delay between retry attempts in seconds')
