@@ -20,6 +20,7 @@ from watchdog.events import FileSystemEventHandler
 from pystray import Icon, Menu, MenuItem
 from PIL import Image, ImageDraw
 from plyer import notification
+import winreg as reg  # For auto-start functionality on Windows
 
 # Configure logging
 def configure_logging(log_to_file, log_file_path, log_level):
@@ -70,6 +71,7 @@ def get_unique_file_path(destination, filename):
 def move_file(file_path, config):
     _, extension = os.path.splitext(file_path)
     if extension == '.tmp' or file_path.endswith('~'):
+        logger.info(f"Ignored temporary file: {file_path}")
         return  # Ignore .tmp files and temporary files ending with ~
 
     destination = config['folders']['Other']
@@ -142,6 +144,7 @@ def create_image():
 
 # Functions for system tray menu actions
 def stop(icon, item):
+    observer.stop()
     icon.stop()
     sys.exit()
 
@@ -158,7 +161,7 @@ def open_config(icon, item):
         os.startfile(config_path)
     elif platform.system() == 'Darwin':  # macOS
         subprocess.call(['open', config_path])
-    else:  # Linux and *nix-like systems
+    else:  # Linux and other UNIX-like systems
         subprocess.call(['xdg-open', config_path])
 
 def toggle_monitoring(icon, item):
@@ -173,6 +176,54 @@ def toggle_monitoring(icon, item):
         item.text = "Pause Monitoring"
         monitoring = True
         logger.info("Monitoring resumed.")
+
+def reload_config(icon, item):
+    global config
+    config = load_config(config_path)
+    create_folders(config)
+    logger.info("Configuration reloaded.")
+    notification.notify(
+        title="Download File Organizer",
+        message="Configuration reloaded successfully.",
+        timeout=10
+    )
+
+def enable_autostart():
+    pth = os.path.dirname(os.path.realpath(__file__))
+    s_name = "DownloadFileOrganizer"
+    address = os.path.join(pth, "download_file_organizer.exe")
+    
+    key = reg.HKEY_CURRENT_USER
+    key_value = r'Software\Microsoft\Windows\CurrentVersion\Run'
+    
+    open = reg.OpenKey(key, key_value, 0, reg.KEY_ALL_ACCESS)
+    reg.SetValueEx(open, s_name, 0, reg.REG_SZ, address)
+    reg.CloseKey(open)
+    logger.info("Application set to auto-start on login.")
+    notification.notify(
+        title="Download File Organizer",
+        message="Application set to auto-start on login.",
+        timeout=10
+    )
+
+def disable_autostart():
+    s_name = "DownloadFileOrganizer"
+    
+    key = reg.HKEY_CURRENT_USER
+    key_value = r'Software\Microsoft\Windows\CurrentVersion\Run'
+    
+    try:
+        open = reg.OpenKey(key, key_value, 0, reg.KEY_ALL_ACCESS)
+        reg.DeleteValue(open, s_name)
+        reg.CloseKey(open)
+        logger.info("Application auto-start disabled.")
+        notification.notify(
+            title="Download File Organizer",
+            message="Application auto-start disabled.",
+            timeout=10
+        )
+    except FileNotFoundError:
+        logger.warning("Auto-start entry not found.")
 
 # Main function to set up the observer
 def main():
@@ -191,8 +242,10 @@ def main():
     global logger
     logger = configure_logging(args.log_to_file, args.log_file_path, log_level)
     
-    config = load_config(args.config)
-    backup_config(args.config)
+    global config_path
+    config_path = args.config
+    config = load_config(config_path)
+    backup_config(config_path)
 
     # Override config values with CLI arguments if provided
     if args.downloads_folder:
@@ -229,6 +282,9 @@ def main():
                     MenuItem("About", show_about),
                     MenuItem("Open Config", open_config),
                     MenuItem("Pause Monitoring", toggle_monitoring),
+                    MenuItem("Reload Config", reload_config),
+                    MenuItem("Enable Auto-Start", enable_autostart),
+                    MenuItem("Disable Auto-Start", disable_autostart),
                     MenuItem("Exit", stop)
                 ))
     icon.run()
