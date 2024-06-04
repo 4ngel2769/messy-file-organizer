@@ -31,9 +31,9 @@ class FileOrganizer:
         self.shutdown_flag = False
 
         user_home = os.path.expanduser("~")
-        config_dir = os.path.join(user_home, '.config', 'dfm')
+        config_dir = os.path.join(user_home, '.config', 'mfo')
         os.makedirs(config_dir, exist_ok=True)
-        self.args.log_file_path = os.path.join(config_dir, 'file_organizer.log')
+        self.args.log_file_path = os.path.join(config_dir, 'messy_files.log')
 
         self.load_config()
         self.logger = self.configure_logging()
@@ -42,7 +42,7 @@ class FileOrganizer:
         self.monitoring = True
         self.observer = None
         self.event_handler = DownloadEventHandler(self)
-        self.icon_path = self.config.get("icon_path", "default_icon.png")
+        self.icon_path = self.config.get("icon_path", "mfo.png")
 
     def create_image(self):
         if os.path.isfile(self.icon_path):
@@ -214,7 +214,7 @@ class FileOrganizer:
         if platform.system() == 'Windows':
             pth = os.path.dirname(os.path.realpath(__file__))
             s_name = "MessyFileOrganizer"
-            address = os.path.join(pth, "download_file_organizer.exe")
+            address = os.path.join(pth, "MessyFileOrganizer.exe")
 
             key = reg.HKEY_CURRENT_USER
             key_value = r'Software\Microsoft\Windows\CurrentVersion\Run'
@@ -252,7 +252,7 @@ class FileOrganizer:
                 self.logger.warning("Auto-start entry not found.")
         else:
             self.logger.warning("Auto-start functionality is only available on Windows.")
-        
+
     def view_log(self, icon, item):
         log_file_path = self.args.log_file_path
         
@@ -294,7 +294,12 @@ class FileOrganizer:
     def show_about(self, icon, item):
         root = tk.Tk()
         root.withdraw()
-        messagebox.showinfo("About", "Messy File Organizer\nVersion 1.0.0\nA file download manager to clean up your messy downloads folder.\nCreated by angeldev0")
+        about_message = ("Messy File Organizer\n"
+                         "Version 1.0.0\n"
+                         "A file download manager to clean up your messy downloads folder.\n"
+                         "Created by angeldev0\n"
+                         "https://github.com/4ngel2769/messy-file-organizer")
+        messagebox.showinfo("About", about_message)
         root.destroy()
 
     def open_config(self, icon, item):
