@@ -11,9 +11,14 @@ import json
 import logging
 import argparse
 import platform
+import sys
+import subprocess
 from time import sleep
+from threading import Thread
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
+from pystray import Icon, Menu, MenuItem
+from PIL import Image, ImageDraw
 from plyer import notification
 
 # Configure logging
@@ -119,6 +124,56 @@ def get_default_downloads_folder():
     else:  # Linux and other UNIX-like systems
         return os.path.join(os.environ['HOME'], 'Downloads')
 
+# Function to create an icon for the system tray
+def create_image():
+    # Generate an image and draw a pattern
+    width = 64
+    height = 64
+    image = Image.new('RGB', (width, height), (0, 0, 0))
+    dc = ImageDraw.Draw(image)
+    
+    dc.rectangle(
+        (width // 2, 0, width, height // 2),
+        fill=(255, 0, 0))
+    dc.rectangle(
+        (0, height // 2, width // 2, height),
+        fill=(255, 0, 0))
+    return image
+
+# Functions for system tray menu actions
+def stop(icon, item):
+    icon.stop()
+    sys.exit()
+
+def show_about(icon, item):
+    notification.notify(
+        title="Download File Organizer",
+        message="Download File Organizer\nVersion 1.0.0\nThe path to learning python\nangeldev0",
+        timeout=10
+    )
+
+def open_config(icon, item):
+    config_path = os.path.join(os.path.dirname(__file__), 'config.json')
+    if platform.system() == 'Windows':
+        os.startfile(config_path)
+    elif platform.system() == 'Darwin':  # macOS
+        subprocess.call(['open', config_path])
+    else:  # Linux and *nix-like systems
+        subprocess.call(['xdg-open', config_path])
+
+def toggle_monitoring(icon, item):
+    global monitoring
+    if monitoring:
+        observer.stop()
+        item.text = "Resume Monitoring"
+        monitoring = False
+        logger.info("Monitoring paused.")
+    else:
+        observer.start()
+        item.text = "Pause Monitoring"
+        monitoring = True
+        logger.info("Monitoring resumed.")
+
 # Main function to set up the observer
 def main():
     parser = argparse.ArgumentParser(description="Monitor and organize your Downloads folder.")
@@ -154,12 +209,29 @@ def main():
 
     create_folders(config)
 
+    global monitoring
+    monitoring = True
+
+    global observer
     event_handler = DownloadEventHandler(config)
     observer = Observer()
     observer.schedule(event_handler, config['downloads_folder'], recursive=False)
 
-    observer.start()
+    observer_thread = Thread(target=observer.start)
+    observer_thread.daemon = True
+    observer_thread.start()
+    
     logger.info(f"Monitoring Downloads folder for new files: {config['downloads_folder']}")
+
+    # Create the system tray icon
+    icon = Icon("Download File Organizer", create_image(), "Download File Organizer", 
+                menu=Menu(
+                    MenuItem("About", show_about),
+                    MenuItem("Open Config", open_config),
+                    MenuItem("Pause Monitoring", toggle_monitoring),
+                    MenuItem("Exit", stop)
+                ))
+    icon.run()
 
     try:
         while True:
