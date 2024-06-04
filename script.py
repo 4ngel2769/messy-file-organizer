@@ -1,3 +1,10 @@
+###########################################
+##       Download FIle Organizer         ##
+##     The path to learning python       ##
+##                                       ##
+## angeldev0                             ##
+###########################################
+
 import os
 import shutil
 import json
@@ -18,7 +25,7 @@ def configure_logging(log_to_file, log_file_path):
     logger = logging.getLogger()
     return logger
 
-# Load configuration
+# Load config from config.json
 def load_config(config_path):
     try:
         with open(config_path, 'r') as file:
@@ -28,7 +35,7 @@ def load_config(config_path):
         logger.error(f"Failed to load configuration file: {e}")
         exit(1)
 
-# Backup configuration file
+# Create backup of configuration file
 def backup_config(config_path):
     try:
         backup_path = config_path + ".bak"
