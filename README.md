@@ -63,13 +63,14 @@ You have the options to:
 ## Python script
 Run the app using the script.py only.
 ### Requirements
-Make sure you have the following pip libraries installed in your environment:
-- x
-- x
+Make sure you have the necessary libraries installed in your environment by running:
+```py
+pip install pyinstaller pystray pillow watchdog plyer
+```
 
 Clone and enter the repository:
 ```zsh
-# Windows Terminal and ULinux/*nix-like systems
+# Windows Terminal and Linux/*nix-like systems
 git clone https://github.com/4ngel2769/messy-file-organizer.git
 cd messy-file-organizer
 ```
