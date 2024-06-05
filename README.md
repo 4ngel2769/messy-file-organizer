@@ -20,39 +20,99 @@
 - [About](#about)
 - [Usage](#usage)
     * [Application (Installer)](#application-with-installer)
+        - [Windows](#windows)
+        - [Linux](#linux)
     * [Python script](#python-script)
         1. [Requirements](#requirements)
         2. [Command line (`cli`) usage](#cli)
         3. [Desktop](#desktop-script)
 - [Compiling from source](#compiling-from-source)
-    * [Windows](#windows)
-    * [Linux](#linux)
-    * [macOS](#macos)
+    * [Windows](#windows-compiling)
+    * [Linux](#linux-compiling)
+    * [macOS](#macos-compiling)
 
 </details>
 
-current issues:
-- [x] Script moves .tmp files which breaks downloading files.
-###### issue resolved
+#
 
 # About
+Messy is an app I made to help me with my downloads hoarding problem. Since I keep most of the things I download stay in that folder for months it has become a nightmare to navigate and find files.
+
+And so here is __Messy__, the fix for my problem. The app will create a couple of folders for a few categories of files. Every time a new file is downloaded inside of the Downloads folder, Messy will detect what kind of file it is and sort it into a category to keep things organized and out of your way.
+
+Messy currently works on Windows 10 & 11, and should work on linux as well. Mac support is not guaranteed because I don't own a mac device to test it.
+
+###### `p.s. if you own a mac and are willing to help with the project, you're more than welcomed!`
 
 # Usage
+Guide to using Messy.
 
 ## Application (with installer)
+Get the latest installer for you OS from [`releases/latest`](https://github.com/4ngel2769/messy-file-organizer/releases/latest) and go through the installation steps. After running, the app will start in the background. Settings can be accessed from the taskbar icon. 
+
+You have the options to:
+- View the logs
+- Open the configuration file
+- Pause/resume file monitoring (`will stop moving files while paused`)
+- Enable/disable autostart (`Windows only`)
+- Reload configuration file
+
+<!-- ### Windows -->
+<!-- ### Linux -->
 
 ## Python script
-
+Run the app using the script.py only.
 ### Requirements
+Make sure you have the following pip libraries installed in your environment:
+- x
+- x
+
+Clone and enter the repository:
+```zsh
+# Windows Terminal and ULinux/*nix-like systems
+git clone https://github.com/4ngel2769/messy-file-organizer.git
+cd messy-file-organizer
+```
+
 ### CLI
+```zsh
+python script.py --help
+usage: script.py [-h] [-c CONFIG] [-l] [-lf LOG_FILE_PATH] [-ll LOG_LEVEL] [-d DOWNLOADS_FOLDER] [-p] [-n]
+                 [-ra RETRY_ATTEMPTS] [-rd RETRY_DELAY]
+
+Monitor and organize your Downloads folder.
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -c CONFIG, --config CONFIG
+                        Path to the configuration file
+  -l, --log_to_file     Enable logging to file
+  -lf LOG_FILE_PATH, --log_file_path LOG_FILE_PATH
+                        Path to the log file
+  -ll LOG_LEVEL, --log_level LOG_LEVEL
+                        Logging level (DEBUG, INFO, WARNING, ERROR, CRITICAL)
+  -d DOWNLOADS_FOLDER, --downloads_folder DOWNLOADS_FOLDER
+                        Path to the Downloads folder
+  -p, --paused          Start in paused state
+  -n, --notifications   Enable desktop notifications
+  -ra RETRY_ATTEMPTS, --retry_attempts RETRY_ATTEMPTS
+                        Number of retry attempts for file operations
+  -rd RETRY_DELAY, --retry_delay RETRY_DELAY
+                        Delay between retry attempts in seconds
+```
+
 ### Desktop (script)
+Run this in your terminal:
+```zsh
+python script.py
+```
 
 
 
 # Compiling from source
 
-## Windows
+## Windows (compiling)
 
-## Linux
+## Linux (compiling)
 
-## macOS
+## macOS (compiling)
