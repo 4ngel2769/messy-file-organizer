@@ -109,13 +109,27 @@ Run this in your terminal:
 ```zsh
 python script.py
 ```
+Messy will not start in the background and can be used as if it was installed.
 
 
 
 # Compiling from source
+Guide to compiling the python script into an executable.
 
 ## Windows (compiling)
+Navigate to the folder where the `script.py` is and open your terminal.
+Run these commands to create the executable:
+```zsh
+# creates the .spec file
+pyi-makespec \script.py
+# Customize the .spec file as needed
+
+# compiles the executable in ./dist/script.exe
+pyinstaller --onefile --windowed --icon=mfo.ico .\script.spec
+```
 
 ## Linux (compiling)
+Use the same steps in [Windows](#windows-compiling)
 
 ## macOS (compiling)
+Don't know how to yet.
