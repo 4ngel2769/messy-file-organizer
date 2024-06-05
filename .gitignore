@@ -3,6 +3,9 @@
 
 config.json
 *.bak
+.vs
+messyfileorganizer
+output
 
 ### Node ###
 # Logs
