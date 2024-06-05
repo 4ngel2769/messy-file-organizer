@@ -79,7 +79,6 @@ cd messy-file-organizer
 python script.py --help
 ```
 ```zsh
-$${\color{white}White}$$
 
 usage: script.py [-h] [-c CONFIG] [-l] [-lf LOG_FILE_PATH] [-ll LOG_LEVEL] [-d DOWNLOADS_FOLDER] [-p] [-n]
                  [-ra RETRY_ATTEMPTS] [-rd RETRY_DELAY]
