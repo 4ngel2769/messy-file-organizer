@@ -133,3 +133,12 @@ Use the same steps in [Windows](#windows-compiling)
 
 ## macOS (compiling)
 Don't know how to yet.
+
+<br><br>
+
+<div align="center">
+    <h1>Support me on ko-fi!</h1>
+    <a href="https://ko-fi.com/angeldev0">
+        <img src="https://img.shields.io/badge/Ko--fi-F16061?style=for-the-badge&logo=ko-fi&logoColor=white">
+    </a>
+</div>
