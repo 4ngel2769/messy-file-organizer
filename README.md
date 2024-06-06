@@ -47,8 +47,16 @@ Messy currently works on Windows 10 & 11, and should work on linux as well. Mac 
 # Usage
 Guide to using Messy.
 
+## Installation
+You can use `winget` to install it on Windows 11 and 10: 
+```ps1
+winget install 4ngel2769.MessyOrganizer
+```
+Or you can get it from [`releases/latest`](https://github.com/4ngel2769/messy-file-organizer/releases/latest) and go through the installation steps.
+
+
 ## Application (with installer)
-Get the latest installer for you OS from [`releases/latest`](https://github.com/4ngel2769/messy-file-organizer/releases/latest) and go through the installation steps. After running, the app will start in the background. Settings can be accessed from the taskbar icon. 
+After running, the app will start in the background. Settings can be accessed from the taskbar icon. 
 
 You have the options to:
 - View the logs
