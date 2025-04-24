@@ -1,0 +1,7 @@
+# Core dependencies
+watchdog>=2.1.0
+plyer>=2.0.0
+Pillow>=8.0.0
+
+# GUI dependencies
+PyQt5>=5.15.0

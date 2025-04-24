@@ -1,152 +1,228 @@
 <div align="center">
     <img src="./mfo.png" width=128>
-    <h1>Messy Organizer</h1>
-    <h3>An application that sorts newly downloaded files into categories</h3>
+    <h1>Messy File Organizer</h1>
+    <h3>Smart file organization for your downloads folder</h3>
     <div>
         <img src="https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54">
-        <img src="https://img.shields.io/badge/Visual%20Studio-5C2D91.svg?style=for-the-badge&logo=visual-studio&logoColor=white">
+        <img src="https://img.shields.io/badge/PyQt5-41CD52?style=for-the-badge&logo=qt&logoColor=white">
         <img src="https://img.shields.io/badge/Windows-0cb1f4?style=for-the-badge&logo=windows&logoColor=white">
         <img src="https://img.shields.io/badge/Windows%2011-%230079d5.svg?style=for-the-badge&logo=Windows%2011&logoColor=white">
         <img src="https://img.shields.io/badge/Linux-000?style=for-the-badge&logo=linux&logoColor=white">
     </div>
-    <h6>⚠️This is a work in progress. Please be patient 💚</h6>
+    <p>
+        <a href="https://github.com/4ngel2769/messy-file-organizer/releases/latest">
+            <img src="https://img.shields.io/github/v/release/4ngel2769/messy-file-organizer?style=flat-square" alt="Latest Release">
+        </a>
+        <a href="https://github.com/4ngel2769/messy-file-organizer/blob/main/LICENSE">
+            <img src="https://img.shields.io/github/license/4ngel2769/messy-file-organizer?style=flat-square" alt="License">
+        </a>
+    </p>
 </div>
 
 
 # Table of contents
 <details>
-    <summary>click to expand</summary>
+    <summary>Click to expand</summary>
 
 - [About](#about)
-- [Usage](#usage)
-    * [Application (Installer)](#application-with-installer)
-        - [Windows](#windows)
-        - [Linux](#linux)
-    * [Python script](#python-script)
-        1. [Requirements](#requirements)
-        2. [Command line (`cli`) usage](#cli)
-        3. [Desktop](#desktop-script)
-- [Compiling from source](#compiling-from-source)
-    * [Windows](#windows-compiling)
-    * [Linux](#linux-compiling)
-    * [macOS](#macos-compiling)
+- [Features](#features)
+- [Installation](#installation)
+- [Using the GUI](#using-the-gui)
+    * [General Settings](#general-settings)
+    * [Categories](#categories)
+    * [File Extensions](#file-extensions)
+    * [Statistics](#statistics)
+    * [Tools](#tools)
+    * [Advanced Settings](#advanced-settings)
+- [Running from Source](#running-from-source)
+    * [Requirements](#requirements)
+    * [Command Line Usage](#command-line-usage)
+- [Building from Source](#building-from-source)
+    * [Windows](#windows-building)
+    * [Linux](#linux-building)
+    * [macOS](#macos-building)
+- [Contributing](#contributing)
 
 </details>
 
-#
+## About
 
-# About
-Messy is an app I made to help me with my downloads hoarding problem. Since I keep most of the things I download stay in that folder for months it has become a nightmare to navigate and find files.
+Messy File Organizer is a powerful tool designed to solve the problem of cluttered download folders. It automatically categorizes and organizes files based on their types, keeping your digital workspace clean and efficient.
 
-And so here is __Messy__, the fix for my problem. The app will create a couple of folders for a few categories of files. Every time a new file is downloaded inside of the Downloads folder, Messy will detect what kind of file it is and sort it into a category to keep things organized and out of your way.
+The application monitors your downloads folder in real-time, detecting new files and sorting them into appropriate category folders based on file extensions. This eliminates the need for manual organization and helps you find files quickly when needed.
 
-Messy currently works on Windows 10 & 11, and should work on linux as well. Mac support is not guaranteed because I don't own a mac device to test it.
+Messy File Organizer works on Windows 10 & 11 and Linux systems. Mac support is experimental as it hasn't been extensively tested.
 
-###### `p.s. if you own a mac and are willing to help with the project, you're more than welcomed!`
+## Features
 
-# Usage
-Guide to using Messy.
+✨ **Automatic File Organization** - Files are sorted into categories as soon as they're downloaded
+
+📊 **File Statistics** - View distribution of files by category and size
+
+🔍 **Duplicate File Detection** - Find and manage duplicate files across categories
+
+⏱️ **Scheduled Organization** - Set up automatic organization on a daily, weekly, or monthly basis
+
+🎨 **Dark/Light Theme** - Choose your preferred visual style or use system settings
+
+🔧 **Customizable Categories** - Add, remove, or modify file categories and extensions
+
+💾 **Configuration Backup** - Easily backup and restore your organization settings
 
 ## Installation
+
+### Windows
+
 You can use `winget` to install it on Windows 11 and 10: 
-```ps1
+```powershell
 winget install 4ngel2769.MessyOrganizer
 ```
-Or you can get it from [`releases/latest`](https://github.com/4ngel2769/messy-file-organizer/releases/latest) and go through the installation steps.
 
+Or download the installer from the [latest release](https://github.com/4ngel2769/messy-file-organizer/releases/latest) page.
 
-## Application (with installer)
-After running, the app will start in the background. Settings can be accessed from the taskbar icon. 
+### Linux
 
-You have the options to:
-- View the logs
-- Open the configuration file
-- Pause/resume file monitoring (`will stop moving files while paused`)
-- Enable/disable autostart (`Windows only`)
-- Reload configuration file
+Download the AppImage from the [latest release](https://github.com/4ngel2769/messy-file-organizer/releases/latest) page.
 
-<!-- ### Windows -->
-<!-- ### Linux -->
+## Using the GUI
 
-## Python script
-Run the app using the script.py only.
+Messy File Organizer features a modern, user-friendly interface that makes configuration simple and intuitive.
+
+### General Settings
+
+- Set your downloads folder location
+- Enable/disable notifications
+- Configure auto-start options
+- Choose between light and dark themes or use system settings
+
+### Categories
+
+- Manage category folders where files will be organized
+- Add new categories for custom organization
+- Customize the destination path for each category
+
+### File Extensions
+
+- Configure which file extensions belong to which categories
+- Add custom mappings for specific file extensions
+- Set default category for unknown file types
+
+### Statistics
+
+- View file distribution across categories
+- See total file count and size for each category
+- Track recent file organization activity
+
+### Tools
+
+- **Duplicate File Detection**: Find and manage duplicate files across categories
+- **Scheduled Organization**: Configure automatic organization on a schedule
+- Choose actions for duplicates: notify only, move to a separate folder, or delete
+
+### Advanced Settings
+
+- Configure retry attempts and delays for file operations
+- Backup and restore your configuration
+- Fine-tune application behavior
+## Running from Source
+
+If you prefer to run the application directly from source code, follow these steps:
+
 ### Requirements
-Make sure you have the necessary libraries installed in your environment by running:
-```py
-pip install pyinstaller pystray pillow watchdog plyer
+
+Make sure you have the necessary libraries installed in your environment:
+
+```bash
+pip install PyQt5 pillow watchdog plyer
 ```
 
 Clone and enter the repository:
-```zsh
-# Windows Terminal and Linux/*nix-like systems
+
+```bash
+# Clone the repository
 git clone https://github.com/4ngel2769/messy-file-organizer.git
 cd messy-file-organizer
+
+# Install all dependencies
+pip install -r requirements.txt
 ```
 
-### CLI
-```zsh
-python script.py --help
-```
-```py
-usage: script.py [-h] [-c CONFIG] [-l] [-lf LOG_FILE_PATH] [-ll LOG_LEVEL] [-d DOWNLOADS_FOLDER] [-p] [-n]
-                 [-ra RETRY_ATTEMPTS] [-rd RETRY_DELAY]
+### Command Line Usage
 
-Monitor and organize your Downloads folder.
+View available command line options:
 
-optional arguments:
-  -h, --help            show this help message and exit
-  -c CONFIG, --config CONFIG
-                        Path to the configuration file
-  -l, --log_to_file     Enable logging to file
-  -lf LOG_FILE_PATH, --log_file_path LOG_FILE_PATH
-                        Path to the log file
-  -ll LOG_LEVEL, --log_level LOG_LEVEL
-                        Logging level (DEBUG, INFO, WARNING, ERROR, CRITICAL)
-  -d DOWNLOADS_FOLDER, --downloads_folder DOWNLOADS_FOLDER
-                        Path to the Downloads folder
-  -p, --paused          Start in paused state
-  -n, --notifications   Enable desktop notifications
-  -ra RETRY_ATTEMPTS, --retry_attempts RETRY_ATTEMPTS
-                        Number of retry attempts for file operations
-  -rd RETRY_DELAY, --retry_delay RETRY_DELAY
-                        Delay between retry attempts in seconds
+```bash
+python gui.py --help
 ```
 
-### Desktop (script)
-Run this in your terminal:
-```zsh
-python script.py
-```
-Messy will not start in the background and can be used as if it was installed.
+Start the application with the graphical interface:
 
-
-
-# Compiling from source
-Guide to compiling the python script into an executable.
-
-## Windows (compiling)
-Navigate to the folder where the `script.py` is and open your terminal.
-Run these commands to create the executable:
-```zsh
-# creates the .spec file
-pyi-makespec \script.py
-# Customize the .spec file as needed
-
-# compiles the executable in ./dist/script.exe
-pyinstaller --onefile --windowed --icon=mfo.ico .\script.spec
+```bash
+python gui.py
 ```
 
-## Linux (compiling)
-Use the same steps in [Windows](#windows-compiling)
+Once running, the application will appear in your system tray. You can access settings and controls by clicking the tray icon.
 
-## macOS (compiling)
-Don't know how to yet.
+**Tray Icon Options:**
+- Open Settings: Configure the application
+- View Logs: Check the application logs
+- Pause/Resume Monitoring: Temporarily stop file organization
+- Enable/Disable Autostart: Control startup behavior
+- Exit: Close the application
 
-<br><br>
+## Building from Source
+
+You can build standalone executables from the source code.
+
+### Windows Building
+
+```bash
+# Install PyInstaller if you don't have it
+pip install pyinstaller
+
+# Navigate to the project directory
+cd messy-file-organizer
+
+# Create the executable
+pyinstaller --onefile --windowed --icon=mfo.ico --name="MessyFileOrganizer" gui.py
+```
+
+The executable will be created in the `dist` folder.
+
+### Linux Building
+
+```bash
+# Install PyInstaller if you don't have it
+pip install pyinstaller
+
+# Navigate to the project directory
+cd messy-file-organizer
+
+# Create the executable
+pyinstaller --onefile --windowed --icon=mfo.ico --name="MessyFileOrganizer" gui.py
+```
+
+### macOS Building
+
+Building on macOS requires similar steps to Linux, but has not been extensively tested.
+
+## Contributing
+
+Contributions are welcome! Here's how you can help:
+
+- **Report bugs** by opening an issue
+- **Suggest features** that would make the app more useful
+- **Submit pull requests** with improvements or bug fixes
+- **Test on different platforms**, especially macOS
+
+Please ensure your code follows the project's style and includes appropriate documentation.
+
+---
 
 <div align="center">
-    <h1>Support me on ko-fi!</h1>
+    <p>If you find this project useful, consider supporting its development!</p>
     <a href="https://ko-fi.com/angeldev0">
         <img src="https://img.shields.io/badge/Ko--fi-F16061?style=for-the-badge&logo=ko-fi&logoColor=white">
     </a>
+    <p>Made with ❤️ by <a href="https://github.com/4ngel2769">Angel</a></p>
 </div>

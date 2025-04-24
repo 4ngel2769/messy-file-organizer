@@ -352,35 +352,36 @@ class DownloadEventHandler(FileSystemEventHandler):
             sleep(5)
             self.organizer.move_file(event.src_path)
 
-def main():
-    parser = argparse.ArgumentParser(description="Monitor and organize your Downloads folder.")
-    parser.add_argument('-c', '--config', type=str, default=os.path.join(os.path.dirname(__file__), 'config.json'), help='Path to the configuration file')
-    parser.add_argument('-l', '--log_to_file', action='store_true', help='Enable logging to file')
-    parser.add_argument('-lf', '--log_file_path', type=str, default='file_organizer.log', help='Path to the log file')
-    parser.add_argument('-ll', '--log_level', type=str, default='INFO', help='Logging level (DEBUG, INFO, WARNING, ERROR, CRITICAL)')
-    parser.add_argument('-d', '--downloads_folder', type=str, help='Path to the Downloads folder')
-    parser.add_argument('-p', '--paused', action='store_true', help='Start in paused state') # This might break
-    parser.add_argument('-n', '--notifications', action='store_true', help='Enable desktop notifications')
-    parser.add_argument('-ra', '--retry_attempts', type=int, help='Number of retry attempts for file operations')
-    parser.add_argument('-rd', '--retry_delay', type=int, help='Delay between retry attempts in seconds')
-    args = parser.parse_args()
+def main(args=None):
+    if args is None:
+        parser = argparse.ArgumentParser(description="Messy File Organizer - A tool to organize your messy downloads folder")
+        parser.add_argument('--config', default=os.path.join(os.path.expanduser("~"), '.config', 'mfo', 'config.json'),
+                            help='Path to configuration file')
+        parser.add_argument('--log-level', default='INFO', choices=['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'],
+                            help='Set the logging level')
+        parser.add_argument('--log-to-file', action='store_true', help='Log to file instead of console')
+        parser.add_argument('--paused', action='store_true', help='Start with monitoring paused')
+        args = parser.parse_args()
 
     organizer = FileOrganizer(args)
-
-    if not args.paused:
-        organizer.start_monitoring()
-
-    tray_thread = Thread(target=organizer.run_tray_icon)
-    tray_thread.start()
-
-    try:
-        while not organizer.shutdown_flag:
-            sleep(1)
-    except KeyboardInterrupt:
-        organizer.stop_monitoring()
     
-    tray_thread.join()
-    sys.exit(0)  # Ensure the program exits completely
+    if not getattr(args, 'paused', False):
+        organizer.start_monitoring()
+        
+    # Run in main thread if called directly
+    if __name__ == "__main__":
+        try:
+            organizer.run_tray_icon()
+        except KeyboardInterrupt:
+            organizer.stop_monitoring()
+            sys.exit(0)
+    else:
+        # Run in separate thread if imported as module
+        tray_thread = Thread(target=organizer.run_tray_icon)
+        tray_thread.daemon = True
+        tray_thread.start()
+        
+    return organizer
 
 if __name__ == "__main__":
     main()
